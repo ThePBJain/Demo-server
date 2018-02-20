@@ -1,17 +1,15 @@
-## Node + Stripe + Express
+## Node + Express + Redis
 
-[![Build Status](https://travis-ci.org/mjhea0/node-stripe-charge.svg?branch=master)](https://travis-ci.org/mjhea0/node-stripe-charge)
+[![Build Status]]
 
-[![Coverage Status](https://coveralls.io/repos/github/mjhea0/node-stripe-charge/badge.svg?branch=master)](https://coveralls.io/github/mjhea0/node-stripe-charge?branch=master)
+[![Coverage Status]]
 
-This is a template for you to use on your own projects for processing one-time Stripe charges. Follow the directions below to get started.
+This is a template for you to use on your Redis Caching Server. Follow the directions below to get started.
 
-> Looking for a simple example? [Node Stripe Example](https://github.com/mjhea0/node-stripe-example)
 
 The back-end API includes:
 
 1. User auth
-1. Stripe integration
 1. Testing via Mocha and Chai as well as Istanbul for code coverage
 
 ## Quick Start
@@ -21,7 +19,6 @@ The back-end API includes:
   - Rename the *.env_sample* file to *.env* and update
   - Update the Mongo URI in */src/_config.js* (if necessary)
 1. Update the key on line 1 of *src/client/js/main.js*
-1. Run `mongod` in a seperate terminal window
 1. Run the app - `npm start` or `gulp`
 
 ### Pranav
@@ -33,9 +30,8 @@ The back-end API includes:
 
 ##Todo
 
-- (todo) Setup Stripe Connect and unit test
+- (todo) Setup unit tests
 - (todo) Setup proper security (ssl, proper auth workflow)
-- (todo) Build iOS app to access endpoints
 - todo: implement csrf
 
 ## Development Workflow
@@ -63,60 +59,15 @@ $ npm run cov
 
 ## Changelog
 
-1. 02/09/2016 - refactored passport, tests, error handlers, client-side javascript (view [commit](https://github.com/mjhea0/node-stripe-charge/commit/f32c6eb731dbf14b194ac07795671931100139b4))
-1. 04/23/2015 - major refactor
-1. 03/11/2015 - updated to Express 4.x
+1. 02/20/2018 - Initial Commit
 
 ## JSON API Documentation
 
-Admin required for all routes!
 
-### Users
+### Tabs
 
-- GET `/api/v1/users` - get all users
-- GET `/api/v1/users/:id` - get user
-- POST `/api/v1/users` - create user
-- PUT `/api/v1/users/:id` - update user
-- DELETE `/api/v1/users/:id` - delete user
+- POST `/tabs/add` - increment counter to # of scans for RFID
 
-### Products
 
-- GET `/products` - get all products
-- GET `/products/:id` - get products
-- POST `/products` - create products
-- PUT `/products/:id` - update products
-- DELETE `/products/:id` - delete products
-
-### Store
-
-- GET `/stores` - get all stores
-- GET `/store/:id` - get store
-- POST `/stores` - create store
-- PUT `/store/:id` - update store
-- DELETE `/store/:id` - delete store (need to test)
-
-### Plan (todo)
-
-- GET `/plans` - get all plans
-- GET `/plan/:id` - get plan
-- POST `/plans` - create plan
-- PUT `/plan/:id` - update plan
-- DELETE `/plan/:id` - delete plan
 
 ## Screenshots
-
-### Main Page
-
-![main](https://raw.github.com/mjhea0/node-stripe-charge/master/images/main.png)
-
-### Charge Page
-
-![charge](https://raw.github.com/mjhea0/node-stripe-charge/master/images/charge.png)
-
-### Successful Charge
-
-![success](https://raw.github.com/mjhea0/node-stripe-charge/master/images/success.png)
-
-### Admin Page
-
-![admin](https://raw.github.com/mjhea0/node-stripe-charge/master/images/admin.png)

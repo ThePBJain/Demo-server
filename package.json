@@ -1,7 +1,7 @@
 {
-  "name": "node-stripe-charge",
+  "name": "Redis-Server-HackPSU",
   "version": "1.0.0",
-  "description": "stripe integration with node and express",
+  "description": "Node, express, redis",
   "scripts": {
     "start": "node ./src/server/bin/www",
     "cov": "./node_modules/.bin/istanbul cover _mocha -- -R spec",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:ThePBJain/BarTab-Server"
+    "url": "git@github.com:ThePBJain/Redis-Server"
   },
   "keywords": [
     "nodejs",
