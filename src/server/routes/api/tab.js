@@ -84,21 +84,19 @@ const requireAuth = passport.authenticate('user-mobile', { session: false });
 //all functions with "requireAuth" used to have helpers.ensureAuthenticated
 
 //open Tab localhost:3000/tabs/setup/:id <- id is for Pi id
-router.post('/setup', helpers.ensureOAuthenticated,
-    function(req, res, next) {
+router.post('/setup', function(req, res, next) {
         //var store = new Store({
         //    'name': req.body.name,
         //    'description': req.body.description,
         //});
-        var userID = req.user._id.toString();
-        var merchantID = req.body.id;
-        console.log("OPENING TAB WITH USER: " + userID + "\n and MERCHANT: " + merchantID);
-        var tabKey = "tab:" + merchantID + "." + userID;
+    var location = req.body.piid.toString();
+    var userRFID = req.body.id;
+    console.log("OPENING TAB WITH USER: " + userRFID + "\n and Pi: " + location);
 
         //todo: if redis.exists(tabkey) then throw danger error.
         //could mean that they are trying to override their currently open tab...
         //redis.hget(tabKey, "numProducts", function (err, reply) {
-        redis.hgetall(tabKey, function (err, obj) {
+        redis.hgetall(userRFID, function (err, obj) {
             if(err){
                 res.status(500)
                     .json({
@@ -117,11 +115,12 @@ router.post('/setup', helpers.ensureOAuthenticated,
                             message: 'Retrieved tab.'
                         });
                 }else{
-                    redis.hmset(tabKey, {
-                        "userID": userID,
-                        "merchantID": merchantID,
-                        "tabTotal": 0.0,
-                        "numProducts": 0
+                    redis.hmset(userRFID, {
+                        "name": req.body.name,
+                        "shirtSize": req.body.shirtSize,
+                        "diet": req.body.diet,
+                        "counter": 0,
+                        "numScans": 0
 
                     }, function(err, reply) {
                         // reply is null when the key is missing
@@ -136,7 +135,7 @@ router.post('/setup', helpers.ensureOAuthenticated,
                                     message: 'Created tab.'
                                 });
                             //test output
-                            redis.hgetall(tabKey, function (err, obj) {
+                            redis.hgetall(userRFID, function (err, obj) {
                                 console.dir(obj);
                             });
                         }
@@ -146,19 +145,6 @@ router.post('/setup', helpers.ensureOAuthenticated,
         });
 
 
-        var tabsMember = merchantID + "." + userID;
-        var merchantTabs = "tabs:" + merchantID;
-        redis.sadd(merchantTabs, tabsMember, function(err, reply) {
-            if(reply){
-                console.log("Successfully added tabID to set.");
-            }
-        });
-
-        //test output
-        redis.smembers(merchantTabs, function(err, reply) {
-            console.log(reply);
-        });
-
     });
 
 //increment counter to tab of rfid: https://redis.io/commands/hincrby
@@ -167,13 +153,14 @@ router.post('/add', function(req, res, next) {
         //    'name': req.body.name,
         //    'description': req.body.description,
         //});
-        var piID = req.body.piid.toString();
+        var location = req.body.piid.toString();
         var userRFID = req.body.id;
-        console.log("Scanned RFID: " + userRFID + "\n with pi ID: " + piID);
+        console.log("Scanned RFID: " + userRFID + "\n with pi ID: " + location);
 
         //todo: if redis.exists(tabkey) then throw danger error.
         //could mean that they are trying to override their currently open tab...
         //redis.hget(tabKey, "numProducts", function (err, reply) {
+    if(location == "food"){
         redis.HINCRBY(userRFID, "counter", 1, function (err, obj) {
             if(err){
                 res.status(500)
@@ -183,7 +170,7 @@ router.post('/add', function(req, res, next) {
                         message: 'Something went wrong'
                     });
             }else {
-                console.log("Incrementing counter for # times RFID has been scanned");
+                console.log("Incrementing counter for # times RFID has been scanned for food");
                 console.dir(obj);
                 if (obj) {
                     res.status(200)
@@ -202,13 +189,132 @@ router.post('/add', function(req, res, next) {
                 }
             }
         });
+    }else{
+        redis.HINCRBY(userRFID, "numScans", 1, function (err, obj) {
+            if(err){
+                res.status(500)
+                    .json({
+                        status: 'error',
+                        data: err,
+                        message: 'Something went wrong'
+                    });
+            }else {
+                console.log("Incrementing numScans for # times RFID has been scanned");
+                console.dir(obj);
+                if (obj) {
+
+                    var numScans = parseInt(obj.toString()) - 1;
+                    var scanLocKey = "Scan." + numScans + ".location";
+                    var scanTimeKey = "Scan." + numScans + ".time";
+                    var obj = {};
+                    var date = Date.now();
+                    console.log("DATE: "+ date);
+                    obj[scanLocKey] = location;
+                    obj[scanTimeKey] = date;
+                    redis.hmset(userRFID, obj, function(err, reply) {
+                            // reply is null when the key is missing
+                            if (err) {
+                                return next(err);
+                            } else {
+                                console.log("Successfully added to tab!");
+                                redis.hgetall(userRFID, function (err, obj) {
+                                    console.dir(obj);
+
+                                });
+                                res.status(200)
+                                    .json({
+                                        status: 'success',
+                                        data: reply,
+                                        message: 'Incremented Tab.'
+                                    });
+                            }
+                        });
+
+                }else{
+                    res.status(500)
+                        .json({
+                            status: 'error',
+                            data: obj,
+                            message: 'Something went wrong'
+                        });
+                }
+            }
+        });
+    }
 
 
 
 
     });
 
+router.get('/name', function(req, res, next) {
 
+    var location = req.body.piid.toString();
+    var userRFID = req.body.id;
+    //this is the index number of the item we would like to remove from the tab
+    //test output
+    redis.hget(userRFID, "name", function (err, obj) {
+        if(err){
+            return next(err);
+        }else {
+            console.dir(obj);
+            res.status(200)
+                .json({
+                    status: 'success',
+                    data: obj,
+                    message: 'Retrieved tab.'
+                });
+        }
+    });
+
+
+    });
+
+router.get('/shirtSize', function(req, res, next) {
+
+    var location = req.body.piid.toString();
+    var userRFID = req.body.id;
+    //this is the index number of the item we would like to remove from the tab
+    //test output
+    redis.hget(userRFID, "shirtSize", function (err, obj) {
+        if(err){
+            return next(err);
+        }else {
+            console.dir(obj);
+            res.status(200)
+                .json({
+                    status: 'success',
+                    data: obj,
+                    message: 'Retrieved tab.'
+                });
+        }
+    });
+
+
+});
+
+router.get('/diet', function(req, res, next) {
+
+    var location = req.body.piid.toString();
+    var userRFID = req.body.id;
+    //this is the index number of the item we would like to remove from the tab
+    //test output
+    redis.hget(userRFID, "diet", function (err, obj) {
+        if(err){
+            return next(err);
+        }else {
+            console.dir(obj);
+            res.status(200)
+                .json({
+                    status: 'success',
+                    data: obj,
+                    message: 'Retrieved tab.'
+                });
+        }
+    });
+
+
+});
 
 /*
 keys   for index 0
