@@ -173,18 +173,40 @@ router.post('/add', function(req, res, next) {
                 console.log("Incrementing counter for # times RFID has been scanned for food");
                 console.dir(obj);
                 if (obj) {
-                    res.status(200)
-                        .json({
-                            status: 'success',
-                            data: obj,
-                            message: 'Incremented Tab.'
-                        });
+                    redis.hgetall(userRFID, function (err, user) {
+                        console.dir(obj);
+                        if(err){
+                            res.status(500)
+                                .json({
+                                    status: 'error',
+                                    data: err,
+                                    message: 'Something went wrong'
+                                });
+                        }else{
+                            var retVal = {
+                                name: user.name,
+                                diet: user.diet,
+                                isRepeat: false
+                            };
+                            if(parseInt(obj) > 1){
+                                retVal.isRepeat = true;
+                            }
+
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: retVal,
+                                    message: 'Incremented Tab.'
+                                });
+                        }
+
+                    });
                 }else{
                     res.status(500)
                         .json({
                             status: 'error',
                             data: obj,
-                            message: 'Something went wrong'
+                            message: 'Couldn\'t find'
                         });
                 }
             }
@@ -258,12 +280,21 @@ router.get('/name', function(req, res, next) {
             return next(err);
         }else {
             console.dir(obj);
-            res.status(200)
-                .json({
-                    status: 'success',
-                    data: obj,
-                    message: 'Retrieved tab.'
-                });
+            if(obj){
+                res.status(200)
+                    .json({
+                        status: 'success',
+                        data: obj,
+                        message: 'Retrieved tab.'
+                    });
+            }else{
+                res.status(404)
+                    .json({
+                        status: 'error',
+                        data: obj,
+                        message: 'Could not find.'
+                    });
+            }
         }
     });
 
