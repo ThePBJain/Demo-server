@@ -17,8 +17,6 @@ The back-end API includes:
 1. Clone and install dependencies
 1. Update the config:
   - Rename the *.env_sample* file to *.env* and update
-  - Update the Mongo URI in */src/_config.js* (if necessary)
-1. Update the key on line 1 of *src/client/js/main.js*
 1. Run the app - `npm start` or `gulp`
 
 ### Pranav
@@ -41,7 +39,7 @@ The back-end API includes:
 1. Create PR, which triggers Travis CI
 1. After tests pass, merge the PR
 1. Tests run again on Travis CI
-1. Once tests pass, code is deployed automatically to staging server on Heroku (WIP)
+1. Once tests pass, code is deployed automatically to staging server on AWS
 
 ## Tests
 
@@ -66,6 +64,7 @@ $ npm run cov
 
 ### Tabs
 
+- POST `/tabs/setup` - Setup user with tab of
 - POST `/tabs/add` - increment counter to # of scans for RFID
 
 
