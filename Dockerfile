@@ -14,6 +14,6 @@ COPY . .
 
 # Install app dependencies
 RUN npm install
-
+ENV RUN_ENV=docker
 EXPOSE 3000
 CMD [ "npm", "start" ]

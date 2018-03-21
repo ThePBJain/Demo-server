@@ -2,7 +2,16 @@
  * Created by PranavJain on 2/22/17.
  */
 
-var redis = require('redis').createClient('6379', 'redis');
+/*check if in docker or no*/
+var redis;
+if(process.env.RUN_ENV){
+    console.log("FOUND WE ARE IN ENV: " + process.env.RUN_ENV);
+    redis = require('redis').createClient('6379', 'redis');
+}else{
+    console.log("FOUND NO ENV VARIABLE: " + process.env.RUN_ENV);
+    redis = require('redis').createClient('6379', 'localhost');
+}
+
 
 /*
  By default, redis.createClient() will use 127.0.0.1 and 6379 as the hostname and port respectively.
