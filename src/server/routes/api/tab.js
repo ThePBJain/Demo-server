@@ -147,6 +147,69 @@ router.post('/setup', function(req, res, next) {
 
     });
 
+router.post('/updatedb', function(req, res, next) {
+    //var store = new Store({
+    //    'name': req.body.name,
+    //    'description': req.body.description,
+    //});
+    var location = req.body.piid.toString();
+    var userRFID = req.body.id;
+    console.log("OPENING TAB WITH USER: " + userRFID + "\n and Pi: " + location);
+
+    //todo: if redis.exists(tabkey) then throw danger error.
+    //could mean that they are trying to override their currently open tab...
+    //redis.hget(tabKey, "numProducts", function (err, reply) {
+    redis.hgetall(userRFID, function (err, obj) {
+        if(err){
+            res.status(500)
+                .json({
+                    status: 'error',
+                    data: err,
+                    message: 'Something went wrong'
+                });
+        }else {
+            console.log("This is what we found when checking if tab is already open");
+            console.dir(obj);
+            if (obj) {
+                res.status(200)
+                    .json({
+                        status: 'success',
+                        data: obj,
+                        message: 'Retrieved tab.'
+                    });
+            }else{
+                redis.hmset(userRFID, {
+                    "name": req.body.name,
+                    "shirtSize": req.body.shirtSize,
+                    "diet": req.body.diet,
+                    "counter": 0,
+                    "numScans": 0
+
+                }, function(err, reply) {
+                    // reply is null when the key is missing
+                    if(err){
+                        return next(err);
+                    }else {
+                        console.log("Successfully opened tab!");
+                        res.status(200)
+                            .json({
+                                status: 'success',
+                                data: reply,
+                                message: 'Created tab.'
+                            });
+                        //test output
+                        redis.hgetall(userRFID, function (err, obj) {
+                            console.dir(obj);
+                        });
+                    }
+                });
+            }
+        }
+    });
+
+
+});
+
 //increment counter to tab of rfid: https://redis.io/commands/hincrby
 router.post('/add', function(req, res, next) {
         //var store = new Store({
