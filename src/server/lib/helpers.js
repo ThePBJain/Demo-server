@@ -10,14 +10,6 @@ function ensureOAuthenticated(req, res, next) {
 
     return requireAuth;
 }
-function ensureMerchantAuthenticated(req, res, next) {
-    console.log("Testing Merchant Auth for: " + req.user.email);
-    if (req.isAuthenticated() && req.user.description) {
-        console.log("Successful test of Merchant Auth");
-        return next();
-    }
-    res.redirect('/merchant/auth/login');
-}
 
 function ensureAdmin(req, res, next) {
     if (req.isAuthenticated() && req.user.admin) {
@@ -61,7 +53,6 @@ function setUserInfo(request) {
 
 module.exports = {
     ensureOAuthenticated: ensureOAuthenticated,
-    ensureMerchantAuthenticated: ensureMerchantAuthenticated,
     setUserInfo: setUserInfo,
     ensureAuthenticated: ensureAuthenticated,
     ensureAdmin: ensureAdmin,

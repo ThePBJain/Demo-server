@@ -35,11 +35,6 @@ var User = new Schema({
     userType: {
         type: String,
         default: 'User'
-    },
-    stripe: {
-        type: String,
-        unique: true,
-        default: "NAN"
     }
 });
 

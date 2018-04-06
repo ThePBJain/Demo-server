@@ -9,8 +9,7 @@ var seedAdmin = function() {
       var user = new User({
         email: 'ad@min.com',
         admin: true,
-        password: password,
-        stripe: 'cus_A9PiFpEe2vpHCI'
+        password: password
       });
       user.generateHash(password, function(err, hash) {
         user.password = hash;

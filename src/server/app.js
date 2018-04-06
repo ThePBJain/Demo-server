@@ -13,7 +13,6 @@ var swig = require('swig');
 var passport = require('./lib/auth');
 
 
-
 // *** seed the database *** //
 if (process.env.NODE_ENV === 'development') {
     var seedAdmin = require('./models/seeds/admin.js');
@@ -22,9 +21,8 @@ if (process.env.NODE_ENV === 'development') {
     productAdmin();
 }
 
-
 // *** config file *** //
-//var config = require('../_config');
+var config = require('./_config');
 
 
 // *** routes *** //
@@ -76,7 +74,7 @@ app.use(express.static(path.join(__dirname, '../', 'client')));
 
 
 // *** mongo *** //
-app.set('dbUrl', "mongodb://mongo:27017");
+app.set('dbUrl', config.mongoURI[process.env.NODE_ENV]);
 mongoose.connect(app.get('dbUrl'));
 
 // *** main routes *** //
