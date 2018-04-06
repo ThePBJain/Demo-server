@@ -8,15 +8,19 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
+var mongoose = require('mongoose');
 var swig = require('swig');
 var passport = require('./lib/auth');
 
-//set up redis
-var redis = require('./lib/redis');
 
 
 // *** seed the database *** //
-
+if (process.env.NODE_ENV === 'development') {
+    var seedAdmin = require('./models/seeds/admin.js');
+    var productAdmin = require('./models/seeds/product.js');
+    seedAdmin();
+    productAdmin();
+}
 
 
 // *** config file *** //
@@ -25,8 +29,12 @@ var redis = require('./lib/redis');
 
 // *** routes *** //
 var mainRoutes = require('./routes/index');
-//var authRoutes = require('./routes/auth');
-var tabRoutes = require('./routes/api/tab');
+var authRoutes = require('./routes/auth');
+//var tabRoutes = require('./routes/api/tab');
+var chargeRoutes = require('./routes/charge');
+var productAPIRoutes = require('./routes/api/product');
+var storeAPIRoutes = require('./routes/api/store');
+var userAPIRoutes = require('./routes/api/user');
 
 
 // *** express instance *** //
@@ -68,12 +76,15 @@ app.use(express.static(path.join(__dirname, '../', 'client')));
 
 
 // *** mongo *** //
-
+app.set('dbUrl', "mongodb://mongo:27017");
+mongoose.connect(app.get('dbUrl'));
 
 // *** main routes *** //
 app.use('/', mainRoutes);
-//app.use('/auth', authRoutes);
-app.use('/tabs/', tabRoutes);
+app.use('/', chargeRoutes);
+app.use('/auth', authRoutes);
+app.use('/api/v1/', productAPIRoutes);
+app.use('/api/v1/', userAPIRoutes);
 
 
 // *** error handlers *** //

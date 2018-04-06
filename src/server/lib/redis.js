@@ -1,7 +1,7 @@
 /**
  * Created by PranavJain on 2/22/17.
  */
-
+//todo: remove
 /*check if in docker or no*/
 var redis;
 if(process.env.RUN_ENV){
