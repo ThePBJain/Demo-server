@@ -17,6 +17,7 @@ var seedAdmin = function() {
         console.log('Dummy admin added!');
       });
     }
+    console.log(documents.length);
   });
 };
 

@@ -5,7 +5,6 @@ var mongoose = require('mongoose-q')(require('mongoose'));
 var passport = require('../../lib/auth');
 var helpers = require('../../lib/helpers');
 var Product = require('../../models/product');
-var Merchant = require('../../models/merchant');
 
 // ** products ** //
 
@@ -46,7 +45,7 @@ router.get('/product/:id', helpers.ensureAdminJSON,
 });
 
 // add new product
-router.post('/product', helpers.ensureMerchantAuthenticated,
+router.post('/product', helpers.ensureAuthenticated,
   function(req, res, next) {
   var product = new Product({
     name: req.body.name,
@@ -54,9 +53,9 @@ router.post('/product', helpers.ensureMerchantAuthenticated,
   });
   var productData = { productID: product._id};
   var options = {new:true};
-  Merchant.findByIdAndUpdateQ(req.user._id, {$push: {menu: productData}}, options)
-      .then(function(merchant){
-        console.dir("found merchant" + merchant);
+  User.findByIdAndUpdateQ(req.user._id, {$push: {menu: productData}}, options)
+      .then(function(user){
+        console.dir("found user" + user);
       })
       .catch(function(err) {
       return next(err);
@@ -78,7 +77,7 @@ router.post('/product', helpers.ensureMerchantAuthenticated,
 });
 
 // update SINGLE product
-router.put('/product/:id', helpers.ensureMerchantAuthenticated,
+router.put('/product/:id', helpers.ensureAuthenticated,
   function(req, res, next) {
   var id = req.params.id;
   var update = req.body;
@@ -99,19 +98,19 @@ router.put('/product/:id', helpers.ensureMerchantAuthenticated,
 });
 
 // delete SINGLE product
-// todo: make sure that it deletes ONLY if it finds it in current merchant's menu...
-router.delete('/product/:id', helpers.ensureMerchantAuthenticated,
+// todo: make sure that it deletes ONLY if it finds it in current user's menu...
+router.delete('/product/:id', helpers.ensureAuthenticated,
   function(req, res, next) {
   var productData = { productID: req.params.id};
   var options = {new:true};
   Product.findByIdAndRemoveQ(req.params.id)
   .then(function(product) {
-    // find and remove it from merchant menu
-      Merchant.findByIdAndUpdate(req.user._id, {$pull: {menu: productData}}, options, function(err, merchant){
+    // find and remove it from user menu
+      User.findByIdAndUpdate(req.user._id, {$pull: {menu: productData}}, options, function(err, user){
         if(err) {
           res.send(err);
         }
-        console.dir("found merchant" + merchant);
+        console.dir("found user" + user);
       });
     res.status(200)
     .json({

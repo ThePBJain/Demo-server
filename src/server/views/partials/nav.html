@@ -11,7 +11,7 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="/products">Pi's</a></li>
+        <li><a href="/products">Products</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if user.admin %}
@@ -22,8 +22,7 @@
           <li><a href="/auth/profile">Profile</a></li>
           <li><a href="/auth/logout">Logout</a></li>
         {% else %}
-          <li><a href="/admin">Admin</a></li>
-          <li><a href="/profile">Profile</a></li>
+        <li><a href="/auth/login">Login/Register</a></li>
         {% endif %}
       </ul>
     </div>

@@ -28,6 +28,8 @@ var seedProduct = function() {
       console.log('Dummy products added!');
     }
 
+    console.log(documents.length);
+
   });
 
 };

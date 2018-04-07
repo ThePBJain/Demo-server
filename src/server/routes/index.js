@@ -4,6 +4,7 @@ var router = express.Router();
 
 
 router.get('/', function(req, res, next) {
+    console.log("HERE: " + req.user);
   res.render('index', {
     user: req.user,
     message: req.flash('message')[0]

@@ -1,17 +1,12 @@
 var express = require('express');
-var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 var router = express.Router();
 var moment = require('moment');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 
 var passport = require('../lib/auth');
 var helpers = require('../lib/helpers');
 var User = require('../models/user');
 
-// Middleware to require login/auth
-const requireAuth = passport.authenticate('user-mobile', { session: false });
-const requireLogin = passport.authenticate('user-local', { session: false });
 
 
 function generateToken(user) {
@@ -34,40 +29,31 @@ router.post('/register', function(req, res, next) {
     if (err) {
       return next(err);
     } else {
-      newUser.password = hash;
-      console.log(newUser);
-      stripe.customers.create({
-        email: req.body.email,
-        description: 'Customer for joshua.jones@example.com'
-      }, function(err, customer) {
-          console.log(err);
-          console.log(customer);
-          console.log(customer.id);
-          newUser.stripe = customer.id;
-          console.log(newUser);
-          //save the user
-          newUser.save(function(err, results) {
+        newUser.password = hash;
+        console.log(newUser);
+
+        //save the user
+        newUser.save(function(err, results) {
             if (err) {
-              console.log(err);
-              req.flash('message', {
-                status: 'danger',
-                value: 'Sorry. That email already exists. Try again.'
-              });
-              return res.redirect('/auth/register');
-            } else {
-              req.logIn(newUser, function(err) {
-                if (err) {
-                  return next(err);
-                }
+                console.log(err);
                 req.flash('message', {
-                  status: 'success',
-                  value: 'Successfully registered (and logged in).'
+                    status: 'danger',
+                    value: 'Sorry. That email already exists. Try again.'
                 });
-                return res.redirect('/');
-              });
+                return res.redirect('/auth/register');
+            } else {
+                req.logIn(newUser, function(err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    req.flash('message', {
+                        status: 'success',
+                        value: 'Successfully registered (and logged in).'
+                    });
+                    return res.redirect('/');
+                });
             }
-          });
-      });
+        });
     }
   });
 });
@@ -91,6 +77,7 @@ router.post('/login', function(req, res, next) {
       });
       return res.redirect('/auth/login');
     }
+    console.log("TEST: " + user);
     req.logIn(user, function(err) {
       if (err) {
         return next(err);

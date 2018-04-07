@@ -5,17 +5,15 @@ var LocalStrategy = require('passport-local');
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 
-//ar User = require('../models/user');
+var User = require('../models/user');
 
-// http://stackoverflow.com/a/21898892
-//todo: get this to work with OAuth 2 check passportjs docs
 
 passport.use('user-local', new LocalStrategy({
         usernameField: 'email',
         passReqToCallback: true
     },
     function(req, email, password, done) {
-        /*User.findOne({ email: email }, function(err, user) {
+        User.findOne({ email: email }, function(err, user) {
             if (err) {
                 return done(err);
             }
@@ -32,8 +30,8 @@ passport.use('user-local', new LocalStrategy({
                     return done(null, false);
                 }
             });
-        });*/
-        return done(null, false);
+        });
+        //return done(null, false);
     })
 );
 passport.use('user-mobile', new JwtStrategy({
@@ -69,15 +67,14 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(key, done) {
-    //todo: wont work cuz commented out
-    /*User.findById(key.id, function(err, user) {
+    User.findById(key.id, function(err, user) {
         if (!err) {
             done(null, user);
         } else {
             done(err, null);
         }
-    });*/
-    done(err, null);
+    });
+    //done(err, null);
 
 });
 

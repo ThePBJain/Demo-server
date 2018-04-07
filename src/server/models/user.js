@@ -24,6 +24,11 @@ var User = new Schema({
             time: { type: Date, default: Date.now }
         }
     ],
+    menu: [
+        {
+            productID: String
+        }
+    ],
     password: {
         type: String,
         required: true

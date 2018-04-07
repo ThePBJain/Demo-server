@@ -52,7 +52,6 @@ function setUserInfo(request) {
 
 
 module.exports = {
-    ensureOAuthenticated: ensureOAuthenticated,
     setUserInfo: setUserInfo,
     ensureAuthenticated: ensureAuthenticated,
     ensureAdmin: ensureAdmin,

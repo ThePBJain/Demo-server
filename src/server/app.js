@@ -13,6 +13,7 @@ var swig = require('swig');
 var passport = require('./lib/auth');
 
 
+
 // *** seed the database *** //
 if (process.env.NODE_ENV === 'development') {
     var seedAdmin = require('./models/seeds/admin.js');
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === 'development') {
     productAdmin();
 }
 
+
 // *** config file *** //
 var config = require('./_config');
 
@@ -28,10 +30,8 @@ var config = require('./_config');
 // *** routes *** //
 var mainRoutes = require('./routes/index');
 var authRoutes = require('./routes/auth');
-//var tabRoutes = require('./routes/api/tab');
 var chargeRoutes = require('./routes/charge');
 var productAPIRoutes = require('./routes/api/product');
-var storeAPIRoutes = require('./routes/api/store');
 var userAPIRoutes = require('./routes/api/user');
 
 
@@ -51,22 +51,22 @@ app.set('views', path.join(__dirname, './views'));
 
 // *** config middleware *** //
 if (process.env.NODE_ENV !== 'test') {
-  var logger = morgan('combined');
-  app.use(logger);
+    var logger = morgan('combined');
+    app.use(logger);
 }
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
-  secret: process.env.SECRET_KEY || 'change_me',
-  resave: false,
-  saveUninitialized: true
+    secret: process.env.SECRET_KEY || 'change_me',
+    resave: false,
+    saveUninitialized: true
 }));
 app.use(flash());
 app.use(function(req, res, next){
-  res.locals.success = req.flash('success');
-  res.locals.danger = req.flash('danger');
-  next();
+    res.locals.success = req.flash('success');
+    res.locals.danger = req.flash('danger');
+    next();
 });
 app.use(passport.initialize());
 app.use(passport.session());
@@ -74,8 +74,10 @@ app.use(express.static(path.join(__dirname, '../', 'client')));
 
 
 // *** mongo *** //
-app.set('dbUrl', config.mongoURI[process.env.NODE_ENV]);
+//app.set('dbUrl', config.mongoURI[process.env.NODE_ENV]);
+app.set('dbUrl', "mongodb://mongo:27017");
 mongoose.connect(app.get('dbUrl'));
+
 
 // *** main routes *** //
 app.use('/', mainRoutes);
@@ -89,31 +91,31 @@ app.use('/api/v1/', userAPIRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
     });
-  });
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
 });
 
 
