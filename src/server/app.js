@@ -74,8 +74,8 @@ app.use(express.static(path.join(__dirname, '../', 'client')));
 
 
 // *** mongo *** //
-//app.set('dbUrl', config.mongoURI[process.env.NODE_ENV]);
-app.set('dbUrl', "mongodb://mongo:27017");
+app.set('dbUrl', config.mongoURI[process.env.NODE_ENV]);
+//app.set('dbUrl', "mongodb://mongo:27017");
 mongoose.connect(app.get('dbUrl'));
 
 
