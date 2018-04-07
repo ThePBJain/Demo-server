@@ -90,30 +90,6 @@ router.post('/login', function(req, res, next) {
     });
   })(req, res, next);
 });
-router.post('/authenticate', function(req, res, next) {
-    passport.authenticate('user-local', function(err, user, info) {
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
-            console.log("No User found");
-            res.status(401).send({
-                success: false,
-                message: 'Invalid username and/or password.'
-            });
-        }else{
-            console.log("User found...");
-            var userInfo = helpers.setUserInfo(user);
-
-            var token = generateToken(userInfo);
-            res.status(200).json({
-                success: true,
-                token: 'JWT ' + token,
-                user: userInfo
-            });
-        }
-    })(req, res, next);
-});
 
 router.get('/logout', helpers.ensureAuthenticated, function(req, res){
   req.logout();
